@@ -57,7 +57,8 @@ internal final class EchoHandler: ChannelInboundHandler {
 
     func channelInactive(ctx: ChannelHandlerContext) {
         _ = activeCount.sub(1)
-        log("EchoHandler:channelActive   \(id):\(handlersCount.load()):\(activeCount.load())")
+        log("EchoHandler:channelInactive   \(id):\(handlersCount.load()):\(activeCount.load())")
+        ctx.close(promise: nil)
     }
 
     // Flush it out. This can make use of gathering writes if multiple buffers are pending
