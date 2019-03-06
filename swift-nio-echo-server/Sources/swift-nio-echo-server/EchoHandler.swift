@@ -18,7 +18,7 @@ func log(_ s:String) {
 }
 
 private let handlersCount = Atomic<UInt32>(value:0)
-private let activeCount = Atomic<UInt32>(value:0)
+//private let activeCount = Atomic<UInt32>(value:0)
 
 private let index = Atomic<UInt32>(value:0)
 
@@ -30,17 +30,17 @@ internal final class EchoHandler: ChannelInboundHandler {
 
     init() {
         _ = handlersCount.add(1)
-        log("EchoHandler:init   \(id):\(handlersCount.load()):\(activeCount.load())")
+        log("EchoHandler:init   \(id):\(handlersCount.load())")
 
     }
 
     deinit {
         _ = handlersCount.sub(1)
-        log("EchoHandler:deinit \(id):\(handlersCount.load()):\(activeCount.load())")
+        log("EchoHandler:deinit \(id):\(handlersCount.load())")
     }
 
     func userInboundEventTriggered(ctx: ChannelHandlerContext, event: Any) {
-        log("EchoHandler:userInboundEventTriggered \(id):\(handlersCount.load()):\(activeCount.load())")
+        log("EchoHandler:userInboundEventTriggered \(id):\(handlersCount.load())")
         ctx.close(promise: nil)
     }
 
@@ -50,21 +50,15 @@ internal final class EchoHandler: ChannelInboundHandler {
         ctx.write(data, promise: nil)
     }
 
-    func channelActive(ctx: ChannelHandlerContext) {
-        _ = activeCount.add(1)
-        log("EchoHandler:channelActive   \(id):\(handlersCount.load()):\(activeCount.load())")
-        ctx.eventLoop.scheduleTask(in: .seconds(30), { [weak self] in
-            guard let `self` = self else { return }
-            log("EchoHandler:scheduleTask done   \(self.id):\(handlersCount.load()):\(activeCount.load())")
-            ctx.close(promise: nil)
-        })
-    }
-
-    func channelInactive(ctx: ChannelHandlerContext) {
-        _ = activeCount.sub(1)
-        log("EchoHandler:channelInactive   \(id):\(handlersCount.load()):\(activeCount.load())")
-        ctx.close(promise: nil)
-    }
+//    func channelActive(ctx: ChannelHandlerContext) {
+//        _ = activeCount.add(1)
+//        log("EchoHandler:channelActive   \(id):\(handlersCount.load()):\(activeCount.load())")
+//    }
+//
+//    func channelInactive(ctx: ChannelHandlerContext) {
+//        _ = activeCount.sub(1)
+//        log("EchoHandler:channelInactive   \(id):\(handlersCount.load()):\(activeCount.load())")
+//    }
 
     // Flush it out. This can make use of gathering writes if multiple buffers are pending
     public func channelReadComplete(ctx: ChannelHandlerContext) {
