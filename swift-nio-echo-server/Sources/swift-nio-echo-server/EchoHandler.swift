@@ -18,7 +18,6 @@ func log(_ s:String) {
 }
 
 private let handlersCount = Atomic<UInt32>(value:0)
-//private let activeCount = Atomic<UInt32>(value:0)
 
 private let index = Atomic<UInt32>(value:0)
 
@@ -49,16 +48,6 @@ internal final class EchoHandler: ChannelInboundHandler {
         // reduce allocations.
         ctx.write(data, promise: nil)
     }
-
-//    func channelActive(ctx: ChannelHandlerContext) {
-//        _ = activeCount.add(1)
-//        log("EchoHandler:channelActive   \(id):\(handlersCount.load()):\(activeCount.load())")
-//    }
-//
-//    func channelInactive(ctx: ChannelHandlerContext) {
-//        _ = activeCount.sub(1)
-//        log("EchoHandler:channelInactive   \(id):\(handlersCount.load()):\(activeCount.load())")
-//    }
 
     // Flush it out. This can make use of gathering writes if multiple buffers are pending
     public func channelReadComplete(ctx: ChannelHandlerContext) {
