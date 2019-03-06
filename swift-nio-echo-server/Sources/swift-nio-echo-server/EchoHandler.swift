@@ -51,7 +51,7 @@ internal final class EchoHandler: ChannelInboundHandler {
         ctx.eventLoop.scheduleTask(in: .seconds(30), { [weak self] in
             guard let `self` = self else { return }
             log("EchoHandler:scheduleTask done   \(self.id):\(handlersCount.load()):\(activeCount.load())")
-            ctx.close()
+            ctx.close(promise: nil)
         })
     }
 
