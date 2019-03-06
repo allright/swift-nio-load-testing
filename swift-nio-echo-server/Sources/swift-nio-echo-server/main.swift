@@ -22,9 +22,9 @@ let bootstrap = ServerBootstrap(group: group)
         // Set the handlers that are appled to the accepted Channels
         .childChannelInitializer { channel in
             // Ensure we don't read faster than we can write by adding the BackPressureHandler into the pipeline.
-//            channel.pipeline.add(handler: BackPressureHandler()).then { v in
+            channel.pipeline.add(handler: IdleStateHandler(allTimeout: .seconds(10))).then { v in
                 channel.pipeline.add(handler: EchoHandler())
-  //          }
+            }
         }
 
         // Enable TCP_NODELAY and SO_REUSEADDR for the accepted Channels
