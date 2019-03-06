@@ -39,6 +39,11 @@ internal final class EchoHandler: ChannelInboundHandler {
         log("EchoHandler:deinit \(id):\(handlersCount.load()):\(activeCount.load())")
     }
 
+    func userInboundEventTriggered(ctx: ChannelHandlerContext, event: Any) {
+        log("EchoHandler:userInboundEventTriggered \(id):\(handlersCount.load()):\(activeCount.load())")
+        ctx.close(promise: nil)
+    }
+
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         // As we are not really interested getting notified on success or failure we just pass nil as promise to
         // reduce allocations.
