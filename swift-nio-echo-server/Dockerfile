@@ -72,5 +72,4 @@ RUN ls -al /src
 
 WORKDIR /src
 RUN $HOME/.swift/usr/bin/swift build -c release
-CMD ["/src/.build/release/swift-nio-echo-server","127.0.0.1","9999"]
-EXPOSE 9999
+CMD ["/src/.build/release/swift-nio-echo-server","0.0.0.0","9999"]
