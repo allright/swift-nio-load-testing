@@ -30,7 +30,7 @@ let upgrader = WebSocketUpgrader(shouldUpgrade: { (head: HTTPRequestHead) in HTT
 
 let bootstrap = ServerBootstrap(group: group)
         // Specify backlog and enable SO_REUSEADDR for the server itself
-        .serverChannelOption(ChannelOptions.backlog, value: 256)
+        .serverChannelOption(ChannelOptions.backlog, value: 1024)
         .serverChannelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
 
         // Set the handlers that are applied to the accepted Channels
