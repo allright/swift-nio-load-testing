@@ -32,11 +32,25 @@ let websocketResponse = """
                         </html>
                         """
 
+private let handlersCount = Atomic<UInt32>(value:0)
+private let index = Atomic<UInt32>(value:0)
+
 internal final class HTTPHandler: ChannelInboundHandler {
     typealias InboundIn = HTTPServerRequestPart
     typealias OutboundOut = HTTPServerResponsePart
 
     private var responseBody: ByteBuffer!
+    private let id = index.add(1)
+
+    init() {
+        _ = handlersCount.add(1)
+        log("HTTPHandler:init   \(id):\(handlersCount.load())")
+    }
+
+    deinit {
+        _ = handlersCount.sub(1)
+        log("HTTPHandler:deinit \(id):\(handlersCount.load())")
+    }
 
     func channelRegistered(ctx: ChannelHandlerContext) {
         var buffer = ctx.channel.allocator.buffer(capacity: websocketResponse.utf8.count)

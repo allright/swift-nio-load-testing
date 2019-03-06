@@ -55,7 +55,7 @@ internal final class WebSocketTimeHandler: ChannelInboundHandler {
         case .text:
             var data = frame.unmaskedData
             let text = data.readString(length: data.readableBytes) ?? ""
-            print(text)
+            log("WebSocketTimeHandler:text \(id):\(handlersCount.load())  '\(text)'")
         default:
             // We ignore all other frames.
             break
