@@ -27,12 +27,12 @@ internal final class EchoHandler: ChannelInboundHandler {
     private let id = index.add(1)
 
     init() {
-        handlersCount.add(1)
+        _ = handlersCount.add(1)
         log("EchoHandler:init   \(id):\(handlersCount.load())")
     }
 
     deinit {
-        handlersCount.sub(1)
+        _ = handlersCount.sub(1)
         log("EchoHandler:deinit \(id):\(handlersCount.load())")
     }
 
@@ -51,7 +51,7 @@ internal final class EchoHandler: ChannelInboundHandler {
     }
 
     public func errorCaught(ctx: ChannelHandlerContext, error: Error) {
-        log("error: \(error)")
+      //  log("error: \(error)")
 
         // As we are not really interested getting notified on success or failure we just pass nil as promise to
         // reduce allocations.
