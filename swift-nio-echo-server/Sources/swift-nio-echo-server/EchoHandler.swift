@@ -2,11 +2,39 @@
 // Created by Andrey Syvrachev on 2019-03-06.
 //
 
+import Foundation
 import NIO
+import NIOConcurrencyHelpers
+
+
+extension Thread {
+    var sname: String {
+        return name ?? ""
+    }
+}
+
+func log(_ s:String) {
+    print("[\(Thread.current.sname)] \(s)" )
+}
+
+private let handlersCount = Atomic<UInt32>(value:0)
+private let index = Atomic<UInt32>(value:0)
 
 internal final class EchoHandler: ChannelInboundHandler {
     public typealias InboundIn = ByteBuffer
     public typealias OutboundOut = ByteBuffer
+
+    private let id = index.add(1)
+
+    init() {
+        handlersCount.add(1)
+        log("EchoHandler:init   \(id):\(handlersCount.load())")
+    }
+
+    deinit {
+        handlersCount.sub(1)
+        log("EchoHandler:deinit \(id):\(handlersCount.load())")
+    }
 
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         // As we are not really interested getting notified on success or failure we just pass nil as promise to
@@ -23,7 +51,7 @@ internal final class EchoHandler: ChannelInboundHandler {
     }
 
     public func errorCaught(ctx: ChannelHandlerContext, error: Error) {
-        print("error: ", error)
+        log("error: \(error)")
 
         // As we are not really interested getting notified on success or failure we just pass nil as promise to
         // reduce allocations.
