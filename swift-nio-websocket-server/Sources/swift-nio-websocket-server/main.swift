@@ -35,7 +35,7 @@ let bootstrap = ServerBootstrap(group: group)
 
         // Set the handlers that are applied to the accepted Channels
         .childChannelInitializer { channel in
-            channel.pipeline.add(handler: IdleStateHandler(allTimeout: .seconds(30))).then {
+            channel.pipeline.add(handler: IdleStateHandler(readTimeout: .seconds(30))).then {
                 let httpHandler = HTTPHandler()
                 let config: HTTPUpgradeConfiguration = (
                         upgraders: [ upgrader ],

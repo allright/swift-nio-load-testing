@@ -96,7 +96,7 @@ internal final class WebSocketTimeHandler: ChannelInboundHandler {
 
         let frame = WebSocketFrame(fin: true, opcode: .text, data: buffer)
         ctx.writeAndFlush(self.wrapOutboundOut(frame)).map {
-            ctx.eventLoop.scheduleTask(in: .seconds(1), { self.sendTime(ctx: ctx) })
+            ctx.eventLoop.scheduleTask(in: .seconds(5), { self.sendTime(ctx: ctx) })
         }.whenFailure { (_: Error) in
             ctx.close(promise: nil)
         }
