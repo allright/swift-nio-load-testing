@@ -32,12 +32,12 @@ internal final class WebSocketTimeHandler: ChannelInboundHandler {
 
     init() {
         _ = handlersCount.add(1)
-        log("WebSocketTimeHandler:init   \(id):\(handlersCount.load())")
+        log("WebSocketTimeHandler:init   \(id):\(handlersCount.load()):\(handlersAdded.load())")
     }
 
     deinit {
         _ = handlersCount.sub(1)
-        log("WebSocketTimeHandler:deinit \(id):\(handlersCount.load())")
+        log("WebSocketTimeHandler:deinit \(id):\(handlersCount.load()):\(handlersAdded.load())")
     }
 
     func handlerAdded(ctx: ChannelHandlerContext) {
