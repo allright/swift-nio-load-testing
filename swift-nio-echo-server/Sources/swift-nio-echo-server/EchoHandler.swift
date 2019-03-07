@@ -51,7 +51,7 @@ internal final class EchoHandler: ChannelInboundHandler {
 
         // get the number of bytes that are readable
         let readableBytes = buffer.readableBytes
-        log("EchoHandler:userInboundEventTriggered \(id):\(handlersCount.load()) data = '\(readableBytes) bytes'")
+        log("EchoHandler:channelRead \(id):\(handlersCount.load()) data = '\(readableBytes) bytes'")
         ctx.write(data, promise: nil)
     }
 
