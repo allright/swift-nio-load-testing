@@ -19,6 +19,8 @@ func log(_ s:String) {
 }
 
 private let handlersCount = Atomic<UInt32>(value:0)
+private let handlersAdded = Atomic<UInt32>(value:0)
+
 private let index = Atomic<UInt32>(value:0)
 
 internal final class WebSocketTimeHandler: ChannelInboundHandler {
@@ -38,8 +40,15 @@ internal final class WebSocketTimeHandler: ChannelInboundHandler {
         log("WebSocketTimeHandler:deinit \(id):\(handlersCount.load())")
     }
 
-    public func handlerAdded(ctx: ChannelHandlerContext) {
+    func handlerAdded(ctx: ChannelHandlerContext) {
+        _ = handlersAdded.add(1)
+        log("WebSocketTimeHandler:handlerAdded   \(id):\(handlersCount.load()):\(handlersAdded.load())")
         self.sendTime(ctx: ctx)
+    }
+
+    func handlerRemoved(ctx: ChannelHandlerContext) {
+        _ = handlersAdded.sub(1)
+        log("WebSocketTimeHandler:handlerRemoved   \(id):\(handlersCount.load()):\(handlersAdded.load())")
     }
 
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {

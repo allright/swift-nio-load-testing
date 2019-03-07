@@ -33,6 +33,8 @@ let websocketResponse = """
                         """
 
 private let handlersCount = Atomic<UInt32>(value:0)
+private let handlersAdded = Atomic<UInt32>(value:0)
+
 private let index = Atomic<UInt32>(value:0)
 
 internal final class HTTPHandler: ChannelInboundHandler {
@@ -44,12 +46,22 @@ internal final class HTTPHandler: ChannelInboundHandler {
 
     init() {
         _ = handlersCount.add(1)
-        log("HTTPHandler:init   \(id):\(handlersCount.load())")
+        log("HTTPHandler:init   \(id):\(handlersCount.load()):\(handlersAdded.load())")
     }
 
     deinit {
         _ = handlersCount.sub(1)
-        log("HTTPHandler:deinit \(id):\(handlersCount.load())")
+        log("HTTPHandler:deinit \(id):\(handlersCount.load()):\(handlersAdded.load())")
+    }
+
+    func handlerAdded(ctx: ChannelHandlerContext) {
+        _ = handlersAdded.add(1)
+        log("HTTPHandler:handlerAdded   \(id):\(handlersCount.load()):\(handlersAdded.load())")
+    }
+
+    func handlerRemoved(ctx: ChannelHandlerContext) {
+        _ = handlersAdded.sub(1)
+        log("HTTPHandler:handlerRemoved   \(id):\(handlersCount.load()):\(handlersAdded.load())")
     }
 
     func channelRegistered(ctx: ChannelHandlerContext) {
