@@ -47,7 +47,7 @@ internal final class EchoHandler: ChannelInboundHandler {
         // As we are not really interested getting notified on success or failure we just pass nil as promise to
         // reduce allocations.
 
-        var buffer = unwrapInboundIn(data)
+        let buffer = unwrapInboundIn(data)
 
         // get the number of bytes that are readable
         let readableBytes = buffer.readableBytes
