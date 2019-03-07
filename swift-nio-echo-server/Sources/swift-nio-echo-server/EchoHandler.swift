@@ -46,6 +46,12 @@ internal final class EchoHandler: ChannelInboundHandler {
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         // As we are not really interested getting notified on success or failure we just pass nil as promise to
         // reduce allocations.
+
+        var buffer = unwrapInboundIn(data)
+
+        // get the number of bytes that are readable
+        let readableBytes = buffer.readableBytes
+        log("EchoHandler:userInboundEventTriggered \(id):\(handlersCount.load()) data = '\(readableBytes) bytes'")
         ctx.write(data, promise: nil)
     }
 
