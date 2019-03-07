@@ -54,6 +54,14 @@ internal final class HTTPHandler: ChannelInboundHandler {
         log("HTTPHandler:deinit \(id):\(handlersCount.load()):\(handlersAdded.load())")
     }
 
+    func userInboundEventTriggered(ctx: ChannelHandlerContext, event: Any) {
+
+        if event is IdleStateHandler.IdleStateEvent {
+            log("HTTPHandler:userInboundEventTriggered (IdleStateEvent) \(id):\(handlersCount.load()):\(handlersAdded.load()) event = \(event)")
+            ctx.close(promise: nil)
+        }
+    }
+
     func handlerAdded(ctx: ChannelHandlerContext) {
         _ = handlersAdded.add(1)
         log("HTTPHandler:handlerAdded   \(id):\(handlersCount.load()):\(handlersAdded.load())")

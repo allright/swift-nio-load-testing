@@ -51,6 +51,13 @@ internal final class WebSocketTimeHandler: ChannelInboundHandler {
         log("WebSocketTimeHandler:handlerRemoved   \(id):\(handlersCount.load()):\(handlersAdded.load())")
     }
 
+    func userInboundEventTriggered(ctx: ChannelHandlerContext, event: Any) {
+        if event is IdleStateHandler.IdleStateEvent {
+            log("WebSocketTimeHandler:userInboundEventTriggered (IdleStateEvent) \(id):\(handlersCount.load()):\(handlersAdded.load()) event = \(event)")
+            ctx.close(promise: nil)
+        }
+    }
+
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         let frame = self.unwrapInboundIn(data)
 

@@ -35,16 +35,19 @@ let bootstrap = ServerBootstrap(group: group)
 
         // Set the handlers that are applied to the accepted Channels
         .childChannelInitializer { channel in
-            let httpHandler = HTTPHandler()
-            let config: HTTPUpgradeConfiguration = (
-                    upgraders: [ upgrader ],
-                    completionHandler: { _ in
-                        channel.pipeline.remove(handler: httpHandler, promise: nil)
-                    }
-            )
-            return channel.pipeline.configureHTTPServerPipeline(withServerUpgrade: config).then {
-                channel.pipeline.add(handler: httpHandler)
+            channel.pipeline.add(handler: IdleStateHandler(allTimeout: .seconds(30))).then {
+                let httpHandler = HTTPHandler()
+                let config: HTTPUpgradeConfiguration = (
+                        upgraders: [ upgrader ],
+                        completionHandler: { _ in
+                            channel.pipeline.remove(handler: httpHandler, promise: nil)
+                        }
+                )
+                return channel.pipeline.configureHTTPServerPipeline(withServerUpgrade: config).then {
+                    channel.pipeline.add(handler: httpHandler)
+                }
             }
+
         }
 
         // Enable TCP_NODELAY and SO_REUSEADDR for the accepted Channels
