@@ -26,7 +26,8 @@ let bootstrap = ClientBootstrap(group: group)
         .connectTimeout(.seconds(10))
         .channelInitializer { channel in
             do {
-                let configuration = TLSConfiguration.forClient()
+                var configuration = TLSConfiguration.forClient()
+                configuration.certificateVerification = .none
                 let sslContext = try SSLContext(configuration: configuration)
                 let handler = try OpenSSLClientHandler(context: sslContext)
 
@@ -57,7 +58,7 @@ extension ClientBootstrap {
 
 let to = targetFromCommandLine()
 
-let cMaxConnecting = 1//1024
+let cMaxConnecting = 1024
 var connecting = UnsafeEmbeddedAtomic<UInt32>(value: 0)
 var connectedF = UnsafeEmbeddedAtomic<UInt32>(value: 0)
 var errors = UnsafeEmbeddedAtomic<UInt32>(value: 0)
@@ -80,7 +81,7 @@ func smartAdd() {
 //        connectedF.add(1)
   //      print("\(Thread.current.name) connected: \(connectedF.load())")
         DispatchQueue.global().async(execute: {
-          //  smartAdd()
+            smartAdd()
         })
 
         $0.closeFuture
