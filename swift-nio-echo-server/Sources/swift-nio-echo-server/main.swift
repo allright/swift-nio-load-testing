@@ -22,8 +22,8 @@ let bootstrap = ServerBootstrap(group: group)
         // Set the handlers that are appled to the accepted Channels
         .childChannelInitializer { channel in
             // Ensure we don't read faster than we can write by adding the BackPressureHandler into the pipeline.
-            channel.pipeline.add(handler: BackPressureHandler()).then {
-                channel.pipeline.add(handler: IdleStateHandler(allTimeout: .seconds(30))).then {
+            channel.pipeline.add(handler: IdleStateHandler(readTimeout: .seconds(10))).then {
+                channel.pipeline.add(handler: BackPressureHandler()).then {
                     channel.pipeline.add(handler: EchoHandler())
                 }
             }
@@ -74,6 +74,11 @@ let channel = try { () -> Channel in
         return try bootstrap.bind(unixDomainSocketPath: path).wait()
     }
 }()
+
+_ = group.next().scheduleRepeatedTask(initialDelay: .seconds(1), delay: .seconds(1)) { _ in
+    print(handlersCount.load())
+}
+
 
 print("Server started and listening on \(channel.localAddress!)")
 

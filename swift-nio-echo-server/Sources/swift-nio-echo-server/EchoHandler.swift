@@ -17,7 +17,7 @@ func log(_ s:String) {
     print("[\(Thread.current.sname)] \(s)" )
 }
 
-private let handlersCount = Atomic<UInt32>(value:0)
+let handlersCount = Atomic<UInt32>(value:0)
 
 private let index = Atomic<UInt32>(value:0)
 
@@ -29,17 +29,17 @@ internal final class EchoHandler: ChannelInboundHandler {
 
     init() {
         _ = handlersCount.add(1)
-        log("EchoHandler:init   \(id):\(handlersCount.load())")
+      //  log("EchoHandler:init   \(id):\(handlersCount.load())")
 
     }
 
     deinit {
         _ = handlersCount.sub(1)
-        log("EchoHandler:deinit \(id):\(handlersCount.load())")
+      //  log("EchoHandler:deinit \(id):\(handlersCount.load())")
     }
 
     func userInboundEventTriggered(ctx: ChannelHandlerContext, event: Any) {
-        log("EchoHandler:userInboundEventTriggered \(id):\(handlersCount.load())")
+//        log("EchoHandler:userInboundEventTriggered \(id):\(handlersCount.load())")
         ctx.close(promise: nil)
     }
 
@@ -47,11 +47,11 @@ internal final class EchoHandler: ChannelInboundHandler {
         // As we are not really interested getting notified on success or failure we just pass nil as promise to
         // reduce allocations.
 
-        let buffer = unwrapInboundIn(data)
-
-        // get the number of bytes that are readable
-        let readableBytes = buffer.readableBytes
-        log("EchoHandler:channelRead \(id):\(handlersCount.load()) data = '\(readableBytes) bytes'")
+//        let buffer = unwrapInboundIn(data)
+//
+//        // get the number of bytes that are readable
+//        let readableBytes = buffer.readableBytes
+//        log("EchoHandler:channelRead \(id):\(handlersCount.load()) data = '\(readableBytes) bytes'")
         ctx.write(data, promise: nil)
     }
 
