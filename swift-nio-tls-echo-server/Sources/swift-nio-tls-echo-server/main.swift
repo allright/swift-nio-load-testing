@@ -26,6 +26,10 @@ let arg2 = arguments.dropFirst().dropFirst().dropFirst().dropFirst().first
 let cores = 1 //System.coreCount
 print("number of threads: \(cores)")
 
+let configuration = TLSConfiguration.forServer(certificateChain: [.file(cert!)], privateKey: .file(key!))
+let sslContext = try! SSLContext(configuration: configuration)
+
+
 let group = MultiThreadedEventLoopGroup(numberOfThreads:cores)
 let bootstrap = ServerBootstrap(group: group)
         // Specify backlog and enable SO_REUSEADDR for the server itself
@@ -35,22 +39,11 @@ let bootstrap = ServerBootstrap(group: group)
         // Set the handlers that are appled to the accepted Channels
         .childChannelInitializer { channel in
             // Ensure we don't read faster than we can write by adding the BackPressureHandler into the pipeline.
-            channel.pipeline.add(handler: IdleStateHandler(readTimeout: .seconds(60))).then {
-
-                channel.pipeline.add(handler: BackPressureHandler()).then {
-                    do {
-
-                        let configuration = TLSConfiguration.forServer(certificateChain: [.file(cert!)],
-                                privateKey: .file(key!))
-                        let sslContext = try SSLContext(configuration: configuration)
-                        let handler = try OpenSSLClientHandler(context: sslContext)
-
-                        return channel.pipeline.add(handler: handler).then {
-                            channel.pipeline.add(handler: EchoHandler())
-                        }
-                    }catch {
-                        return channel.pipeline.add(handler: EchoHandler())
-
+            let handler = try! OpenSSLServerHandler(context: sslContext)
+            return channel.pipeline.add(handler: handler).then {
+                channel.pipeline.add(handler: IdleStateHandler(readTimeout: .seconds(60))).then {
+                    channel.pipeline.add(handler: BackPressureHandler()).then {
+                        channel.pipeline.add(handler: EchoHandler())
                     }
                 }
             }
