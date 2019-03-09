@@ -13,16 +13,19 @@
 //===----------------------------------------------------------------------===//
 import NIO
 
-let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
+let cores = 1 //System.coreCount
+print("number of threads: \(cores)")
+
+let group = MultiThreadedEventLoopGroup(numberOfThreads:cores)
 let bootstrap = ServerBootstrap(group: group)
         // Specify backlog and enable SO_REUSEADDR for the server itself
-        .serverChannelOption(ChannelOptions.backlog, value: 256)
+        .serverChannelOption(ChannelOptions.backlog, value: 1024)
         .serverChannelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
 
         // Set the handlers that are appled to the accepted Channels
         .childChannelInitializer { channel in
             // Ensure we don't read faster than we can write by adding the BackPressureHandler into the pipeline.
-            channel.pipeline.add(handler: IdleStateHandler(readTimeout: .seconds(10))).then {
+            channel.pipeline.add(handler: IdleStateHandler(readTimeout: .seconds(60))).then {
                 channel.pipeline.add(handler: BackPressureHandler()).then {
                     channel.pipeline.add(handler: EchoHandler())
                 }
