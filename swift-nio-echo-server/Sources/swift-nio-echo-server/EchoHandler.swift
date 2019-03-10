@@ -18,6 +18,9 @@ func log(_ s:String) {
 }
 
 let handlersCount = Atomic<UInt32>(value:0)
+let timeoutEvents = Atomic<UInt32>(value:0)
+let errors = Atomic<UInt32>(value:0)
+
 
 private let index = Atomic<UInt32>(value:0)
 
@@ -40,7 +43,10 @@ internal final class EchoHandler: ChannelInboundHandler {
 
     func userInboundEventTriggered(ctx: ChannelHandlerContext, event: Any) {
 //        log("EchoHandler:userInboundEventTriggered \(id):\(handlersCount.load())")
-        ctx.close(promise: nil)
+        if event is IdleStateHandler.IdleStateEvent {
+            _ = timeoutEvents.add(1)
+            ctx.close(promise: nil)
+        }
     }
 
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
@@ -68,6 +74,7 @@ internal final class EchoHandler: ChannelInboundHandler {
 
         // As we are not really interested getting notified on success or failure we just pass nil as promise to
         // reduce allocations.
+        _ = errors.add(1)
         ctx.close(promise: nil)
     }
 }
