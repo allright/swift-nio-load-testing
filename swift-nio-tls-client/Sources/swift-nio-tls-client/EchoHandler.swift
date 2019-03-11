@@ -7,31 +7,29 @@ import NIOConcurrencyHelpers
 
 let line = "test"
 
-var connected = UnsafeEmbeddedAtomic<UInt32>(value: 0)
-var received = UnsafeEmbeddedAtomic<UInt32>(value: 0)
-var active = UnsafeEmbeddedAtomic<UInt32>(value: 0)
+var handlersCount = UnsafeEmbeddedAtomic<UInt32>(value: 0)
 
 internal final class EchoHandler: ChannelInboundHandler {
     public typealias InboundIn = ByteBuffer
     public typealias OutboundOut = ByteBuffer
     private var numBytes = 0
-    let id = connected.add(1)
+  //  let id = connected.add(1)
 
     init() {
-
-        print("EchoHandler:init \(id):\(received.load())")
+        _ = handlersCount.add(1)
+   //     print("EchoHandler:init \(id):\(received.load())")
     }
 
     deinit {
- //       connected.sub(1)
-        print("EchoHandler:deinit \(id):\(received.load())")
+      _ =  handlersCount.sub(1)
+     //   print("EchoHandler:deinit \(id):\(received.load())")
     }
 
 
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         var byteBuffer = self.unwrapInboundIn(data)
-        _ = received.add(1)
-        print("EchoHandler:channelRead \(id):\(received.load())")
+   //     _ = received.add(1)
+     //   print("EchoHandler:channelRead \(id):\(received.load())")
 
         //    print("Received: '\(byteBuffer.readableBytes)' back from the server, closing channel.")
 
@@ -41,16 +39,16 @@ internal final class EchoHandler: ChannelInboundHandler {
 //
         if numBytes == 0 {
             if let string = byteBuffer.readString(length: byteBuffer.readableBytes) {
-                print("Received: '\(string)' back from the server, closing channel.")
+        //        print("Received: '\(string)' back from the server, closing channel.")
             } else {
-                print("Received the line back from the server, closing channel")
+          //      print("Received the line back from the server, closing channel")
             }
 //            ctx.close(promise: nil)
         }
     }
 
     public func errorCaught(ctx: ChannelHandlerContext, error: Error) {
-        print("error: ", error)
+      //  print("error: ", error)
 
         // As we are not really interested getting notified on success or failure we just pass nil as promise to
         // reduce allocations.
@@ -58,8 +56,8 @@ internal final class EchoHandler: ChannelInboundHandler {
     }
 
     public func channelActive(ctx: ChannelHandlerContext) {
-        _ = active.add(1)
-        print("EchoHandler:channelActive \(id):\(active.load())")
+      //  _ = active.add(1)
+     //   print("EchoHandler:channelActive \(id):\(active.load())")
 
         //print("\(connected.load()): Client connected to \(ctx.remoteAddress!)")
 //

@@ -93,8 +93,12 @@ for _ in 0...cMaxConnecting {
     smartAdd()
 }
 
+_ = group.next().scheduleRepeatedTask(initialDelay: .seconds(1), delay: .seconds(1)) { _ in
+    print(handlersCount.load())
+}
 
-sleep(1000)
+
+sleep(10000)
 
 _ = try closeFutures.map { channel -> Void in
     try channel.wait()
