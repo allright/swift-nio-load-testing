@@ -11,7 +11,7 @@
 extern std::atomic<uint64_t> count;
 
 int main(int argc, char* argv[]) {
-    try {
+   // try {
 
         if (argc < 3) {
             std::cout << "asio-echo-server <threads_count> <ip> <port>" << std::endl;
@@ -40,13 +40,13 @@ int main(int argc, char* argv[]) {
 
         ThreadPool pool(ctx.context(), threads);
         PeriodicTimer timer(ctx.context());
-        timer.start(std::chrono::seconds(3),[&]{
+        timer.start(std::chrono::seconds(2),[&]{
              LOG_INF("Handlers: " << count);
         });
 
-    } catch (std::exception &e) {
-        LOG_ERR(e.what());
-    }
+//    } catch (std::exception &e) {
+//        LOG_ERR(e.what());
+//    }
 
     usleep(10000000);
 

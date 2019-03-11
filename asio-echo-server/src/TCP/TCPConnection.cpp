@@ -52,12 +52,15 @@ void TCPConnection::resetWatchDog() {
 
 
 void TCPConnection::start() {
-  //  LOG_INF("[" << connection_id_ << "] TCPConnection start: " << socket_.remote_endpoint());
+    //  LOG_INF("[" << connection_id_ << "] TCPConnection start: " << socket_.remote_endpoint());
     resetWatchDog();
     recv();
 }
 
-//ВОТКНУТЬ PeridoicTimer и закрыть по ошибке!
+void TCPConnection::close(){
+    // may be it is looks fearfully, but it works:) sorry for ugly design - for tests it is ok
+    delete this;
+}
 
 void TCPConnection::recv() {
     dispatch(strand_, [&]() {
@@ -71,7 +74,7 @@ void TCPConnection::recv() {
                     } else {
               //          LOG_ERR("[" << connection_id_ << "] TCPConnection:recv:send bytes_transferred: "
                //                     << bytes_transferred);
-                        onClose(connection_id_);
+                        close();
                     }
                 });
                 resetWatchDog();
@@ -80,7 +83,7 @@ void TCPConnection::recv() {
             } else {
              //   LOG_ERR("[" << connection_id_ << "] TCPConnection recv error: " << error);
                 //recv();
-                onClose(connection_id_);
+                close();
 
             }
         });

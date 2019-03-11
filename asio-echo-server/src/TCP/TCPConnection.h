@@ -7,15 +7,21 @@
 
 #include <asio.hpp>
 
-class TCPConnection{
+class TCPConnection {
 public:
     TCPConnection(asio::io_context& io_context,uint64_t id);
+
     ~TCPConnection();
+
     asio::ip::tcp::socket& socket();
     void start();
-    std::function<void(uint64_t id)> onClose;
 
 private:
+
+
+
+    void close();
+
     asio::ip::tcp::socket socket_;
     asio::io_context::strand strand_;
     std::vector<char> packet_;

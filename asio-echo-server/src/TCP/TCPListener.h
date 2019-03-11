@@ -21,8 +21,6 @@ private:
 
     asio::ip::tcp::acceptor acceptor_;
     std::atomic<uint64_t> current_id;
-
-    std::map<uint64_t,std::shared_ptr<TCPConnection>> connections_;
 };
 
 
