@@ -13,8 +13,12 @@
 //===----------------------------------------------------------------------===//
 import NIO
 import Foundation
-import glibc
 
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+import Darwin
+#else
+import Glibc
+#endif
 // TRY for 1 Thread only now
 var echoHandlers = CircularBuffer<EchoHandler>(initialRingCapacity: 100000)
 //var idleHandlers = CircularBuffer<IdleStateHandler>(initialRingCapacity: 100000)
@@ -114,11 +118,11 @@ let channel = try { () -> Channel in
 _ = group.next().scheduleRepeatedTask(initialDelay: .seconds(1), delay: .seconds(1)) { _ in
     print("handlers: \(handlersCount.load()) timeouts:\(timeoutEvents.load()) errors: \(errors.load()) added: \(handlersAdded.load())")
     fflush(stdout)
-    fflush(stderr)
 }
 
 
 print("Server started and listening on \(channel.localAddress!)")
+fflush(stdout)
 
 // This will never unblock as we don't close the ServerChannel
 try channel.closeFuture.wait()
