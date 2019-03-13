@@ -12,6 +12,38 @@
 //
 //===----------------------------------------------------------------------===//
 import NIO
+import Foundation
+
+
+// TRY for 1 Thread only now
+var echoHandlers = CircularBuffer<EchoHandler>(initialRingCapacity: 100000)
+//var idleHandlers = CircularBuffer<IdleStateHandler>(initialRingCapacity: 100000)
+
+
+
+extension EventLoop {
+    func echoHandler() -> EchoHandler {
+        if echoHandlers.count > 0 {
+            return echoHandlers.removeFirst()
+        } else {
+            return EchoHandler()
+        }
+    }
+
+    func releaseEchoHandler (handler:EchoHandler){
+        echoHandlers.append(handler)
+    }
+
+//    func idleHandler() -> IdleStateHandler {
+//        if idleHandlers.count > 0 {
+//            return idleHandlers.removeFirst()
+//        } else {
+//            return  IdleStateHandler(readTimeout: .seconds(30))
+//        }
+//    }
+
+}
+
 
 let cores = 1 //System.coreCount
 print("number of threads: \(cores)")
@@ -25,11 +57,11 @@ let bootstrap = ServerBootstrap(group: group)
         // Set the handlers that are appled to the accepted Channels
         .childChannelInitializer { channel in
             // Ensure we don't read faster than we can write by adding the BackPressureHandler into the pipeline.
-            channel.pipeline.add(handler: IdleStateHandler(readTimeout: .seconds(30))).then {
-                channel.pipeline.add(handler: BackPressureHandler()).then {
-                    channel.pipeline.add(handler: EchoHandler())
-                }
-            }
+        //    channel.pipeline.add(handler: IdleStateHandler(readTimeout: .seconds(30))).then {
+          //      channel.pipeline.add(handler: BackPressureHandler()).then {
+                    channel.pipeline.add(handler: channel.eventLoop.echoHandler())
+         //       }
+          //  }
         }
 
         // Enable TCP_NODELAY and SO_REUSEADDR for the accepted Channels
@@ -78,8 +110,9 @@ let channel = try { () -> Channel in
     }
 }()
 
+
 _ = group.next().scheduleRepeatedTask(initialDelay: .seconds(1), delay: .seconds(1)) { _ in
-    print("handlers: \(handlersCount.load()) timeouts:\(timeoutEvents.load()) errors: \(errors.load())")
+    print("handlers: \(handlersCount.load()) timeouts:\(timeoutEvents.load()) errors: \(errors.load()) added: \(handlersAdded.load())")
 }
 
 

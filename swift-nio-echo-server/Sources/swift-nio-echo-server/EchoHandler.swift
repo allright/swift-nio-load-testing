@@ -21,6 +21,7 @@ let handlersCount = Atomic<UInt32>(value:0)
 let timeoutEvents = Atomic<UInt32>(value:0)
 let errors = Atomic<UInt32>(value:0)
 
+let handlersAdded = Atomic<UInt32>(value:0)
 
 private let index = Atomic<UInt32>(value:0)
 
@@ -76,5 +77,14 @@ internal final class EchoHandler: ChannelInboundHandler {
         // reduce allocations.
         _ = errors.add(1)
         ctx.close(promise: nil)
+    }
+
+    func handlerAdded(ctx: ChannelHandlerContext) {
+        _ = handlersAdded.add(1)
+    }
+
+    func handlerRemoved(ctx: ChannelHandlerContext) {
+        _ = handlersAdded.sub(1)
+        ctx.eventLoop.releaseEchoHandler(handler: self)
     }
 }
