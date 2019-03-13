@@ -115,10 +115,10 @@ let channel = try { () -> Channel in
 }()
 
 
-_ = group.next().scheduleRepeatedTask(initialDelay: .seconds(1), delay: .seconds(1)) { _ in
+_ = group.next().scheduleRepeatedTask(initialDelay: .seconds(1), delay: .seconds(1), task: { _ in
     print("handlers: \(handlersCount.load()) timeouts:\(timeoutEvents.load()) errors: \(errors.load()) added: \(handlersAdded.load())")
     fflush(stdout)
-}
+})
 
 
 print("Server started and listening on \(channel.localAddress!)")
