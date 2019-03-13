@@ -114,11 +114,14 @@ let channel = try { () -> Channel in
     }
 }()
 
-
-_ = group.next().scheduleRepeatedTask(initialDelay: .seconds(1), delay: .seconds(1)) { _ in
+func stat(){
     print("handlers: \(handlersCount.load()) timeouts:\(timeoutEvents.load()) errors: \(errors.load()) added: \(handlersAdded.load())")
     fflush(stdout)
-    return
+}
+
+
+_ = group.next().scheduleRepeatedTask(initialDelay: .seconds(1), delay: .seconds(1)) { _ in
+    stat()
 }
 
 
