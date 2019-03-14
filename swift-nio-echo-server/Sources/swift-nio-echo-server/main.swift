@@ -25,9 +25,18 @@ let bootstrap = ServerBootstrap(group: group)
         // Set the handlers that are appled to the accepted Channels
         .childChannelInitializer { channel in
             // Ensure we don't read faster than we can write by adding the BackPressureHandler into the pipeline.
-            channel.pipeline.add(handler: IdleStateHandler(readTimeout: .seconds(30))).then {
-                channel.pipeline.add(handler: BackPressureHandler()).then {
-                    channel.pipeline.add(handler: EchoHandler())
+            let idleStateHandler = IdleStateHandler(readTimeout: .seconds(30))
+            channel.eventLoop.retain.append(idleStateHandler)
+
+            return channel.pipeline.add(handler: idleStateHandler).then {
+
+                let backPressureHandler = BackPressureHandler()
+                channel.eventLoop.retain.append(backPressureHandler)
+                return channel.pipeline.add(handler: backPressureHandler).then {
+
+                    let echoHandler = EchoHandler()
+                    channel.eventLoop.retain.append(echoHandler)
+                    return channel.pipeline.add(handler: echoHandler)
                 }
             }
         }
