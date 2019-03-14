@@ -3,10 +3,10 @@
     "pins": [
       {
         "package": "swift-nio",
-        "repositoryURL": "https://github.com/apple/swift-nio.git",
+        "repositoryURL": "https://github.com/allright/swift-nio.git",
         "state": {
-          "branch": "nio-1.13",
-          "revision": "29a9f2aca71c8afb07e291336f1789337ce235dd",
+          "branch": "nio-1.13-performance-test",
+          "revision": "c166de79d5d2cde6d6546a7d3281bd636c818ce3",
           "version": null
         }
       },
