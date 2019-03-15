@@ -87,8 +87,13 @@ let channel = try { () -> Channel in
     }
 }()
 
-_ = group.next().scheduleRepeatedTask(initialDelay: .seconds(1), delay: .seconds(1)) { _ in
+func flushPrint(){
     print("handlers: \(handlersCount.load()) timeouts:\(timeoutEvents.load()) errors: \(errors.load())")
+    fflush(stdout)
+}
+
+_ = group.next().scheduleRepeatedTask(initialDelay: .seconds(1), delay: .seconds(1)) { _ in
+    flushPrint()
 }
 
 
